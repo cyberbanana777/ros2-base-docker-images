@@ -1,0 +1,4 @@
+*.tar
+src/
+files_to_container/
+.git
