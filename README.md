@@ -14,9 +14,9 @@
 
 | Репозиторий | Образ | Основан на |
 |---|---|---|
-| go1-hackathon-images | `unitree-hackathon:extra-humble-jetson-camera` | `ros2:base-humble-jetson` |
-| jetbot-images | `jetbot:extra-humble-amd64-host` | `ros2:base-humble-amd64` |
-| jetbot-images | `jetbot:extra-humble-arm64-robot` | `ros2:base-humble-arm64` |
+| unitree-go1-hackathon-images | `unitree-hackathon:extra-humble-jetson-camera` | `ros2:base-humble-jetson` |
+| mirea-jetbot-images | `jetbot:extra-humble-amd64-host` | `ros2:base-humble-amd64` |
+| mirea-jetbot-images | `jetbot:extra-humble-arm64-robot` | `ros2:base-humble-arm64` |
 
 Во всех образах семейства (и в extra-образах из других репозиториев) одинаково: CycloneDDS 0.10, свой конфиг DDS (`cyclonedds.xml`), баннер при входе, цветной терминал с меткой `[docker:humble]` в начале приглашения, цветные логи нод, автодополнение `ros2` и `colcon`, `dds-check` и набор утилит для отладки сети, пользователь `ros` с `sudo`, рабочее пространство `/developer_ws` (свой `src/` монтируется с хоста). Настройки каждого образа лежат в его папке, в `ros2_custom_config_setup/`, и правятся без пересборки.
 
