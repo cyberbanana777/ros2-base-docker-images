@@ -3,7 +3,7 @@
 # Версия образа берётся из .env (VERSION), там же HOST_UID/HOST_GID (./set_host_ids.sh).
 services:
   ros2-base-humble-jetson:
-    image: registry.cookcloud.ru/base_images/ros2-base-humble-jetson:${VERSION:-v1.0.0}
+    image: registry.cookcloud.ru/base_images/ros2-base-humble-jetson:${VERSION:-v1.0.1}
     container_name: ros2-base-humble-jetson
     build: .
     environment:

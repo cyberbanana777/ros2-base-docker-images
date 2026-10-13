@@ -122,6 +122,10 @@ RUN if ! getent group ${USER_GID} > /dev/null; then \
     chown -R ${USER_UID}:${USER_GID} /home/${USERNAME} && \
     id ${USERNAME}
 
+# Интерактивный root-шелл (docker exec ... bash) сам переключается на ros, чтобы файлы в
+# примонтированных папках не становились root-овыми. Пропускается при KEEP_ROOT=1 и в sudo -i.
+RUN echo 'if [ -t 0 ] && [ -z "${KEEP_ROOT:-}" ] && [ -z "${SUDO_USER:-}" ] && id ros >/dev/null 2>&1; then export HOME=/home/ros; exec gosu ros bash; fi' >> /root/.bashrc
+
 # Entrypoint; настройки терминала подключаются из user_data/ros2_custom_config_setup/bashrc.sh
 COPY ros_entrypoint.sh /ros2_custom_entrypoint.sh
 RUN chmod +x /ros2_custom_entrypoint.sh && \

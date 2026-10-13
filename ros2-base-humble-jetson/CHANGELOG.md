@@ -3,6 +3,19 @@
 Формат: [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/), версии `vMAJOR.MINOR.PATCH`.
 Версия образа хранится в `.env` (`VERSION`).
 
+## [v1.0.1] — 2026-10-13
+
+Образ: `registry.cookcloud.ru/base_images/ros2-base-humble-jetson:v1.0.1`.
+
+### Исправлено
+- Вход через `docker exec` / `docker compose exec ... bash` давал root-шелл, и файлы в `user_data/developer_ws` создавались на хосте от root. Теперь интерактивный шелл root автоматически переключается на `ros`.
+
+### Добавлено
+- `KEEP_ROOT=1` (`docker compose exec -e KEEP_ROOT=1 <имя> bash`) оставляет root-шелл. `sudo -i` из-под `ros` по-прежнему даёт root.
+
+### Известное ограничение
+- Неинтерактивные команды (`docker exec <имя> colcon build`) по-прежнему идут от root: для них нужен `-u ros`.
+
 ## [v1.0.0] — 2026-10-13
 
 Первый релиз. Образ: `registry.cookcloud.ru/base_images/ros2-base-humble-jetson:v1.0.0`.

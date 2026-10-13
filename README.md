@@ -4,9 +4,9 @@
 
 | Папка | Образ | Версия | Ubuntu | Железо | Что внутри |
 |---|---|---|---|---|---|
-| `ros2-base-humble-arm64` | `registry.cookcloud.ru/base_images/ros2-base-humble-arm64` | v1.0.0 | 22.04 | arm64 | ROS из apt |
-| `ros2-base-humble-amd64` | `registry.cookcloud.ru/base_images/ros2-base-humble-amd64` | v1.0.0 | 22.04 | amd64 | ROS из apt |
-| `ros2-base-humble-jetson` | `registry.cookcloud.ru/base_images/ros2-base-humble-jetson` | v1.0.0 | 18.04 | Jetson Nano (JetPack 4.6.x, L4T 32.7.1) | ROS собран из исходников, CUDA через nvidia-рантайм |
+| `ros2-base-humble-arm64` | `registry.cookcloud.ru/base_images/ros2-base-humble-arm64` | v1.0.1 | 22.04 | arm64 | ROS из apt |
+| `ros2-base-humble-amd64` | `registry.cookcloud.ru/base_images/ros2-base-humble-amd64` | v1.0.1 | 22.04 | amd64 | ROS из apt |
+| `ros2-base-humble-jetson` | `registry.cookcloud.ru/base_images/ros2-base-humble-jetson` | v1.0.1 | 18.04 | Jetson Nano (JetPack 4.6.x, L4T 32.7.1) | ROS собран из исходников, CUDA через nvidia-рантайм |
 
 Версия каждого образа хранится в `.env` его папки (`VERSION`), а история изменений в `CHANGELOG.md` там же. Таблица выше показывает актуальные версии: при выпуске новой версии её нужно обновить.
 
@@ -15,21 +15,20 @@
 Образы лежат в реестре `registry.cookcloud.ru` (при необходимости `docker login registry.cookcloud.ru`):
 
 ```bash
-docker pull registry.cookcloud.ru/base_images/ros2-base-humble-jetson:v1.0.0   # Jetson Nano (arm64, Ubuntu 18.04)
-docker pull registry.cookcloud.ru/base_images/ros2-base-humble-arm64:v1.0.0    # arm64, Ubuntu 22.04
-docker pull registry.cookcloud.ru/base_images/ros2-base-humble-amd64:v1.0.0    # amd64, Ubuntu 22.04
+docker pull registry.cookcloud.ru/base_images/ros2-base-humble-jetson:v1.0.1   # Jetson Nano (arm64, Ubuntu 18.04)
+docker pull registry.cookcloud.ru/base_images/ros2-base-humble-arm64:v1.0.1    # arm64, Ubuntu 22.04
+docker pull registry.cookcloud.ru/base_images/ros2-base-humble-amd64:v1.0.1    # amd64, Ubuntu 22.04
 ```
 
 Нужен только свой вариант: на Jetson с 6 ГБ свободного места пулить все три не стоит. Запускать образ можно из папки проекта (`docker compose up -d`, версия берётся из `.env`) или своей командой `docker run`.
 
 Кто на чём строится (у дополнительных образов тег начинается с `extra-`, у базовых с `base-`):
 
-| Репозиторий (gihub, аналогичный текущему)| Образ | Основан на |
+| Репозиторий | Образ | Основан на |
 |---|---|---|
-| [unitree-go1-hackathon-images](https://github.com/cyberbanana777/unitree-go1-hackathon-images) | `unitree-hackathon:extra-humble-jetson-camera` | `registry.cookcloud.ru/base_images/ros2-base-humble-jetson:v1.0.0` |
-| [mirea-jetbot-images](https://github.com/cyberbanana777/mirea-jetbot-images) | `registry.cookcloud.ru/jetbot_mirea/extra-humble-amd64-host:v1.0.0` | `registry.cookcloud.ru/base_images/ros2-base-humble-amd64:v1.0.0` |
-| [mirea-jetbot-images](https://github.com/cyberbanana777/mirea-jetbot-images) | `registry.cookcloud.ru/jetbot_mirea/extra-humble-arm64-robot:v1.0.0` | `registry.cookcloud.ru/base_images/ros2-base-humble-arm64:v1.0.0` |
-| - приватный репозиторий - | `registry.cookcloud.ru/unitree_go1_hackathon/extra-humble-amd64-digital-twin:v0.1.0` | `registry.cookcloud.ru/base_images/ros2-base-humble-amd64:v1.0.0` |
+| unitree-go1-hackathon-images | `unitree-hackathon:extra-humble-jetson-camera` | `registry.cookcloud.ru/base_images/ros2-base-humble-jetson:v1.0.1` |
+| mirea-jetbot-images | `jetbot:extra-humble-amd64-host` | `registry.cookcloud.ru/base_images/ros2-base-humble-amd64:v1.0.1` |
+| mirea-jetbot-images | `jetbot:extra-humble-arm64-robot` | `registry.cookcloud.ru/base_images/ros2-base-humble-arm64:v1.0.1` |
 
 Во всех образах семейства (и в extra-образах из других репозиториев) одинаково: CycloneDDS 0.10, свой конфиг DDS (`cyclonedds.xml`), баннер при входе, цветной терминал с меткой `[docker:humble]` в начале приглашения, цветные логи нод, автодополнение `ros2` и `colcon`, `dds-check` и набор утилит для отладки сети, пользователь `ros` с `sudo`, рабочее пространство `/home/ros/developer_ws` (монтируется с хоста). Всё, что уходит в контейнер, лежит в папке `user_data/` образа и монтируется в домашний каталог `/home/ros`. Настройки в `user_data/ros2_custom_config_setup/` правятся без пересборки.
 
@@ -132,9 +131,9 @@ sudo sysctl --system
 Каждый образ собирается скриптом `build_image.sh` из своей папки:
 
 ```bash
-cd ros2-base-humble-arm64 && ./build_image.sh           # на arm64-машине
-cd ros2-base-humble-amd64 && ./build_image.sh
-cd ros2-base-humble-jetson && ./build_image.sh          # на Jetson Nano
+./ros2-base-humble-arm64/build_image.sh           # на arm64-машине
+./ros2-base-humble-amd64/build_image.sh
+./ros2-base-humble-jetson/build_image.sh          # на Jetson Nano
 ```
 
 
@@ -155,7 +154,7 @@ cd ros2-base-humble-jetson
 source .env && docker push registry.cookcloud.ru/base_images/ros2-base-humble-jetson:$VERSION
 ```
 
-Разовая сборка другой версии без правки `.env`: `VERSION=v1.0.1 ./build_image.sh`. Extra-репозитории указывают базу в `FROM` полным адресом, например `FROM registry.cookcloud.ru/base_images/ros2-base-humble-jetson:v1.0.0`.
+Разовая сборка другой версии без правки `.env`: `VERSION=v1.0.1 ./build_image.sh`. Extra-репозитории указывают базу в `FROM` полным адресом, например `FROM registry.cookcloud.ru/base_images/ros2-base-humble-jetson:v1.0.1`.
 
 ## Перенос образов на другие устройства
 
@@ -178,9 +177,10 @@ Extra-образам из репозиториев go1-hackathon-images и jetbo
 | Действие | Команда |
 |---|---|
 | Запустить контейнер в фоне | `docker compose up -d` |
-| Зайти в контейнер | `docker compose exec -u ros <имя образа> bash` (например, `ros2-base-humble-jetson`) |
-| Зайти без compose | `docker exec -it -u ros <имя образа> bash` |
-| Зайти под root | `docker compose exec <имя образа> bash` |
+| Зайти в контейнер (под `ros`) | `docker compose exec <имя образа> bash` (например, `ros2-base-humble-jetson`) |
+| Зайти без compose | `docker exec -it <имя образа> bash` |
+| Выполнить команду под `ros` | `docker compose exec -u ros <имя образа> colcon build` |
+| Зайти под root | `docker compose exec -e KEEP_ROOT=1 <имя образа> bash` (или `sudo -i` внутри) |
 | Посмотреть, запущен ли контейнер | `docker compose ps` |
 | Остановить и удалить контейнер | `docker compose down` |
 | Разовый запуск без compose | `./start_container.sh` |
@@ -208,7 +208,7 @@ Extra-образам из репозиториев go1-hackathon-images и jetbo
 
 Пользователь состоит в группах `video`, `dialout` и `plugdev`. Кроме того, entrypoint добавляет его в группы, которым на хосте принадлежат `/dev/video*`, `/dev/ttyUSB*` и `/dev/ttyACM*`, поэтому камеры и serial доступны, даже если GID групп на хосте другие.
 
-`docker exec` не проходит через entrypoint и по умолчанию заходит под root, поэтому для входа под `ros` нужен `-u ros` (см. «Запуск»). Если нужен root: `sudo -i` внутри контейнера или вход без `-u`.
+`docker exec` не проходит через entrypoint и по умолчанию запускает процесс от root. Чтобы файлы в `user_data/developer_ws` не становились root-овыми, интерактивный `bash` из `docker exec` сам переключается на `ros` (через `/root/.bashrc`; отключается `KEEP_ROOT=1`). Неинтерактивные команды (`docker exec <имя> colcon build`) этим не охватываются: для них нужен `-u ros`. Root внутри: `sudo -i` или `-e KEEP_ROOT=1`.
 
 Extra-образы, построенные на этих базах, наследуют entrypoint. Если в extra-образе задан свой `ENTRYPOINT`, он должен вызывать `/ros2_custom_entrypoint.sh "$@"`, иначе подгонки UID не будет. Инструкции `USER root` / `USER ros` в их Dockerfile больше не нужны: сборка идёт от root.
 
