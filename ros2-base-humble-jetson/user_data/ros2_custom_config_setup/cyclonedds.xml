@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Конфиг CycloneDDS 0.10 образа ros2-base-humble-jetson.
+  Лежит на хосте, монтируется в контейнер в /home/ros/ros2_custom_config_setup/cyclonedds.xml
+  и подключается в setup.sh через CYCLONEDDS_URI.
+
+  Изменения применяются при следующем запуске ноды, перезапускать контейнер не нужно.
+  После правки перезапусти и демон: ros2 daemon stop
+-->
+<CycloneDDS xmlns="https://cdds.io/config">
+  <Domain Id="any">
+    <General>
+      <Interfaces>
+        <!-- По умолчанию CycloneDDS выбирает интерфейс сам. -->
+        <NetworkInterface autodetermine="true" priority="default" multicast="default"/>
+
+        <!-- Явный выбор интерфейсов (можно несколько): закомментируй строку выше
+             и раскомментируй нужные. Список интерфейсов Jetson: ip -br a
+             l4tbr0 — USB-сеть Jetson (192.168.55.1), через которую подключается ноутбук.
+        <NetworkInterface name="l4tbr0" priority="default" multicast="default"/>
+        <NetworkInterface name="eth0" priority="default" multicast="default"/>
+        <NetworkInterface name="wlan0" priority="default" multicast="default"/>
+        -->
+      </Interfaces>
+
+      <!-- default = мультикаст только для обнаружения нод на Wi-Fi и для всего на кабеле.
+           false = без мультикаста вообще, тогда нужен блок <Peers> ниже. -->
+      <AllowMulticast>default</AllowMulticast>
+    </General>
+
+    <!-- Большой буфер приёма сокета: важно для видео.
+         ВКЛЮЧАЙ ТОЛЬКО ПОСЛЕ увеличения net.core.rmem_max на хосте Jetson (см. README),
+         иначе ноды не запустятся с ошибкой «failed to increase socket receive buffer size».
+    <Internal>
+      <SocketReceiveBufferSize min="10MB"/>
+    </Internal>
+    -->
+
+    <!-- Обнаружение нод по unicast, если сеть режет мультикаст.-->
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>100</MaxAutoParticipantIndex>
+      <Peers>
+        <Peer address="localhost"/>
+        <Peer address="192.168.123.15"/>
+      </Peers>
+    </Discovery>
+
+    <!-- Отладка: при старте ноды CycloneDDS напишет выбранные интерфейсы и настройки.
+    <Tracing>
+      <Verbosity>config</Verbosity>
+      <OutputFile>stderr</OutputFile>
+    </Tracing>
+    -->
+  </Domain>
+</CycloneDDS>

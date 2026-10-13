@@ -1,0 +1,23 @@
+# registry.cookcloud.ru/base_images/ros2-base-humble-jetson
+# Запуск: docker compose up -d / exec -u ros ros2-base-humble-jetson bash / down. Подробности в README.md.
+# Версия образа берётся из .env (VERSION), там же HOST_UID/HOST_GID (./set_host_ids.sh).
+services:
+  ros2-base-humble-jetson:
+    image: registry.cookcloud.ru/base_images/ros2-base-humble-jetson:${VERSION:-v1.0.0}
+    container_name: ros2-base-humble-jetson
+    build: .
+    environment:
+      HOST_UID: ${HOST_UID:-1000}   # UID/GID пользователя ros = хостовые
+      HOST_GID: ${HOST_GID:-1000}
+    runtime: nvidia            # CUDA доступна через nvidia-рантайм
+    network_mode: host          # ноды видят хост и сеть без проброса портов (DDS)
+    ipc: host
+    privileged: true            # доступ к камерам и USB
+    stdin_open: true
+    tty: true
+    restart: unless-stopped     # контейнер сам поднимается после перезагрузки хоста
+    volumes:
+      - /dev:/dev
+      - ./user_data/developer_ws:/home/ros/developer_ws
+      - ./user_data/extra_files_to_container:/home/ros/extra_files_to_container
+      - ./user_data/ros2_custom_config_setup:/home/ros/ros2_custom_config_setup
